@@ -12,7 +12,6 @@ class AuthorActivity : AppCompatActivity() {
 
         val books = intent.getSerializableExtra("books") as ArrayList<Books>
 
-
         var authorFrag = AuthorListFragment.newInstance(books)
         var fragTrans = supportFragmentManager.beginTransaction()
         fragTrans.add(R.id.author_place_holder_vp2, authorFrag)

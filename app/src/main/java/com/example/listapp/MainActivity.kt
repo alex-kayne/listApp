@@ -1,6 +1,7 @@
 package com.example.listapp
 
 import android.os.Bundle
+import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -106,17 +107,4 @@ class MainActivity : AppCompatActivity() {
         t.join()
         return booksList
     }
-
-    fun updateBook(book: Books){
-        val t = Thread {
-            var dbh = DBHelper(this)
-            try {
-
-            } finally {
-
-            }
-
-        }
-    }
-
 }
