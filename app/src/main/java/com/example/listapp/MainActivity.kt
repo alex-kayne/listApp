@@ -1,6 +1,7 @@
 package com.example.listapp
 
 import android.os.Bundle
+import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -15,18 +16,19 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MyBooksListFragment.OnReadChangeListener {
     private val tabTitles = arrayOf("Мои книги", "Списки")
     private val books: ArrayList<Books> by lazy { generateBooks() }
+    private lateinit var fragmentList: Array<Fragment>
+    private lateinit var adapter: FragmentStateAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val tl = findViewById<TabLayout>(R.id.tab_layout)
         val vp = findViewById<ViewPager2>(R.id.place_holder_vp2)
-        val fragmentList =
-            arrayOf(MyBooksListFragment.newInstance(books), MyListsFragment.newInstance(books))
-
-        val adapter = VPAdapter(this, fragmentList)
+        fragmentList = arrayOf(MyBooksListFragment.newInstance(books), MyListsFragment.newInstance(books))
+        adapter = VPAdapter(this, fragmentList)
         vp.adapter = adapter
         TabLayoutMediator(tl, vp) { tab, pos ->
             tab.text = tabTitles[pos]
@@ -39,15 +41,24 @@ class MainActivity : AppCompatActivity() {
         override fun createFragment(position: Int): Fragment {
             return fragmentList[position]
         }
+    }
+
+    override fun readChange(book: Books) {
+        for (el in fragmentList){
+            if (el is MyListsFragment) {
+                el.dataUpdate(0)
+                el.dataUpdate(1)
+            }
+        }
 
     }
 
     private fun generateBooks(): ArrayList<Books> {
         val booksList = arrayListOf<Books>()
         val t = Thread {
-            var dbh = DBHelper(this)
+            val dbh = DBHelper(this)
             try {
-                var dbBooksArray = dbh.readAllFromBooks()
+                val dbBooksArray = dbh.readAllFromBooks()
                 if (dbBooksArray.size == 0) {
                     val url = URL("https://pastebin.com/raw/cxSZwjdV")
                     val urlConnection = url.openConnection() as HttpURLConnection
@@ -62,14 +73,14 @@ class MainActivity : AppCompatActivity() {
                         val jsonObject = JSONTokener(msg.toString()).nextValue() as JSONObject
                         val booksArray = jsonObject.getJSONArray("books")
                         for (i in 0 until booksArray.length()) {
-                            var name = booksArray.getJSONObject(i).getString("name")
-                            var author = booksArray.getJSONObject(i).getString("author")
-                            var image = booksArray.getJSONObject(i).getString("image")
-                            var series = booksArray.getJSONObject(i).getBoolean("series")
-                            var audiobook = booksArray.getJSONObject(i).getBoolean("audiobook")
-                            var ebook = booksArray.getJSONObject(i).getBoolean("ebook")
-                            var read = booksArray.getJSONObject(i).getBoolean("read")
-                            var book = Books(
+                            val name = booksArray.getJSONObject(i).getString("name")
+                            val author = booksArray.getJSONObject(i).getString("author")
+                            val image = booksArray.getJSONObject(i).getString("image")
+                            val series = booksArray.getJSONObject(i).getBoolean("series")
+                            val audiobook = booksArray.getJSONObject(i).getBoolean("audiobook")
+                            val ebook = booksArray.getJSONObject(i).getBoolean("ebook")
+                            val read = booksArray.getJSONObject(i).getBoolean("read")
+                            val book = Books(
                                 name,
                                 author,
                                 image,
@@ -106,17 +117,4 @@ class MainActivity : AppCompatActivity() {
         t.join()
         return booksList
     }
-
-    fun updateBook(book: Books){
-        val t = Thread {
-            var dbh = DBHelper(this)
-            try {
-
-            } finally {
-
-            }
-
-        }
-    }
-
 }
