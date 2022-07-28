@@ -1,6 +1,7 @@
 package com.example.listapp
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -8,7 +9,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listapp.ui.adapter.MyListAdapter
 
-class MyListsFragment : Fragment(R.layout.fragment_my_lists) {
+class MyListsFragment : Fragment(R.layout.fragment_my_lists), MyListAdapter.OnCategoryListClicked {
+    var recyclerViewAdapter: MyListAdapter? = null
+
 
     private val categoryNames = arrayOf( // Засунуть в strings array
         "Непрочитанные",
@@ -20,6 +23,14 @@ class MyListsFragment : Fragment(R.layout.fragment_my_lists) {
         "Не в списке"
     )
 
+    override fun onCategoryListClicked(categoryName: String) {
+        if (categoryName.equals("Авторы")) {
+            val intent = Intent(activity?.applicationContext, AuthorActivity::class.java)
+            intent.putExtra("books", this.arguments?.getSerializable("books"))
+            activity?.startActivity(intent)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.rvMyLists)
@@ -27,17 +38,17 @@ class MyListsFragment : Fragment(R.layout.fragment_my_lists) {
         recyclerView.adapter = MyListAdapter(
             categoryNames,
             arguments?.getSerializable("books") as ArrayList<Books>,
-            activity
+            this
         )
         recyclerViewAdapter = recyclerView.adapter as MyListAdapter
     }
 
+    fun dataUpdate(pos: Int) {
+        recyclerViewAdapter?.notifyItemChanged(pos)
+    }
 
     companion object {
-        @SuppressLint("StaticFieldLeak")
-        var recyclerViewAdapter: MyListAdapter? = null
 
-        @JvmStatic
         fun newInstance(books: ArrayList<Books>) = MyListsFragment().apply {
             arguments = Bundle().apply { putSerializable("books", books) }
         }

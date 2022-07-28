@@ -1,6 +1,5 @@
 package com.example.listapp.ui.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,56 +9,50 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.listapp.Books
 import com.example.listapp.DBHelper
-import com.example.listapp.MyListsFragment
 import com.example.listapp.R
+import com.example.listapp.ui.util.DoubleClickListener
 
 class BooksAdapter(
-    private val values: ArrayList<Books>
-) :
-    RecyclerView.Adapter<BooksAdapter.ViewHolder>(), View.OnClickListener {
-    val LOG_TAG = "myLogs"
-    var lastClickTime: Long = 0
-    private var books: HashMap<View, Books>? = HashMap()
+    private val values: ArrayList<Books>,
+    private val bookClicked: OnBookClicked
+) : RecyclerView.Adapter<BooksAdapter.BookViewHolder>() {
 
     override fun getItemCount() = values.size
 
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val itemView = LayoutInflater.from(parent.context) // from вызывает вопрос
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookViewHolder {
+        val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_list_my_books, parent, false)
-        itemView.setOnClickListener(this)
-        return ViewHolder(itemView)
+        val vH = BookViewHolder(itemView)
+        itemView.setOnClickListener(DoubleClickListener { v ->
+            val book = values[vH.adapterPosition]
+            v.isSelected = !book.read
+            bookClicked.onBookClicked(book)
+        })
+        return vH
     }
 
-    override fun onClick(v: View) {
-        var clickTime = System.currentTimeMillis()
-        if (clickTime - lastClickTime < 500) {
-            lastClickTime = 0
-            Log.d(LOG_TAG, books?.get(v)?.read.toString())
-            books?.get(v)?.read = books?.get(v)?.read != true
-            v.isSelected = books?.get(v)!!.read
-            var dbh = DBHelper(v.context!!)
-            books?.get(v)?.let { dbh.updateIsRead(it.dbIndex, it.read) }
-            MyListsFragment.recyclerViewAdapter?.notifyItemChanged(0)
-            MyListsFragment.recyclerViewAdapter?.notifyItemChanged(1)
-            return
+    override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
+        holder.bind(values[position])
+    }
+
+    class BookViewHolder(
+        itemView: View
+    ) : RecyclerView.ViewHolder(itemView) {
+        private val ivBookCover: ImageView = itemView.findViewById(R.id.bookCover)
+        private val tvBookName: TextView = itemView.findViewById(R.id.bookName)
+        private val tvAuthorName: TextView = itemView.findViewById(R.id.authorName)
+
+        fun bind(book: Books) {
+            tvBookName.text = book.name
+            tvAuthorName.text = book.author
+            Glide.with(itemView.context)
+                .load(book.image)
+                .into(ivBookCover)
+            itemView.isSelected = book.read
         }
-        lastClickTime = clickTime
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Glide.with(holder.itemView.context).load(values[position].image)
-            .into(holder.ivBookCover)
-        holder.tvBookName.text = values[position].name
-        holder.tvAuthorName.text = values[position].author
-        books?.put(holder.itemView, values[position])
-        holder.itemView.isSelected = books?.get(holder.itemView)!!.read
-    }
-
-    class ViewHolder(itemView: View) :
-        RecyclerView.ViewHolder(itemView) {
-        var ivBookCover: ImageView = itemView.findViewById(R.id.bookCover)
-        var tvBookName: TextView = itemView.findViewById(R.id.bookName)
-        var tvAuthorName: TextView = itemView.findViewById(R.id.authorName)
+    interface OnBookClicked {
+        fun onBookClicked(book: Books)
     }
 }
