@@ -6,20 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-<!--    <TextView-->
-<!--        android:id="@+id/textView"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="30dp"-->
-<!--        android:background="#03A9F4"-->
-<!--        android:gravity="center"-->
-<!--        android:shadowColor="@color/black"-->
-<!--        android:shadowDx="-1"-->
-<!--        android:shadowDy="-1"-->
-<!--        android:shadowRadius="1"-->
-<!--        android:text="@string/authorListHeader"-->
-<!--        android:textSize="18sp"-->
-<!--        android:textStyle="bold"-->
-<!--        app:layout_constraintBottom_toTopOf="@id/authorList"/>-->
+
     <FrameLayout
         android:id="@+id/author_place_holder_vp2"
         android:layout_width="match_parent"
