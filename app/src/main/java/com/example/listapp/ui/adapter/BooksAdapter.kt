@@ -7,8 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.listapp.Books
-import com.example.listapp.DBHelper
+import com.example.listapp.model.entity.Books
 import com.example.listapp.R
 import com.example.listapp.ui.util.DoubleClickListener
 

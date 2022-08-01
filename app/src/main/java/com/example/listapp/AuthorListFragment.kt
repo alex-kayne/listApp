@@ -5,6 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.listapp.model.entity.Books
 import com.example.listapp.ui.adapter.AuthorListAdapter
 
 class AuthorListFragment : Fragment(R.layout.fragment_author_list) {

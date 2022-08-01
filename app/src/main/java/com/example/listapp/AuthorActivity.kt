@@ -2,8 +2,7 @@ package com.example.listapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
+import com.example.listapp.model.entity.Books
 
 class AuthorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

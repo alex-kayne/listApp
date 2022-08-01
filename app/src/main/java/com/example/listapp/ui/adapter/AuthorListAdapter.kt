@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.listapp.Books
+import com.example.listapp.model.entity.Books
 import com.example.listapp.R
 
 

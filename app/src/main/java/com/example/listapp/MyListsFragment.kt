@@ -1,12 +1,12 @@
 package com.example.listapp
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.listapp.model.entity.Books
 import com.example.listapp.ui.adapter.MyListAdapter
 
 class MyListsFragment : Fragment(R.layout.fragment_my_lists), MyListAdapter.OnCategoryListClicked {
@@ -35,12 +35,12 @@ class MyListsFragment : Fragment(R.layout.fragment_my_lists), MyListAdapter.OnCa
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.rvMyLists)
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        recyclerView.adapter = MyListAdapter(
+        recyclerViewAdapter = MyListAdapter(
             categoryNames,
             arguments?.getSerializable("books") as ArrayList<Books>,
             this
         )
-        recyclerViewAdapter = recyclerView.adapter as MyListAdapter
+        recyclerView.adapter = recyclerViewAdapter
     }
 
     fun dataUpdate(pos: Int) {

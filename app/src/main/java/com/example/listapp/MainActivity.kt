@@ -1,38 +1,30 @@
 package com.example.listapp
 
 import android.os.Bundle
-import android.view.Window
+import android.os.Handler
+import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.example.listapp.model.BooksRepository
+import com.example.listapp.model.entity.Books
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import org.json.JSONObject
-import org.json.JSONTokener
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
 
 class MainActivity : AppCompatActivity(), MyBooksListFragment.OnReadChangeListener {
     private val tabTitles = arrayOf("Мои книги", "Списки")
-    private val books: ArrayList<Books> by lazy { generateBooks() }
     private lateinit var fragmentList: Array<Fragment>
     private lateinit var adapter: FragmentStateAdapter
+    private val handler = Handler(Looper.getMainLooper())
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val tl = findViewById<TabLayout>(R.id.tab_layout)
-        val vp = findViewById<ViewPager2>(R.id.place_holder_vp2)
-        fragmentList = arrayOf(MyBooksListFragment.newInstance(books), MyListsFragment.newInstance(books))
-        adapter = VPAdapter(this, fragmentList)
-        vp.adapter = adapter
-        TabLayoutMediator(tl, vp) { tab, pos ->
-            tab.text = tabTitles[pos]
-        }.attach()
+
+        generateBooks()
     }
 
     class VPAdapter(fragment: FragmentActivity, private val fragmentList: Array<Fragment>) :
@@ -44,77 +36,33 @@ class MainActivity : AppCompatActivity(), MyBooksListFragment.OnReadChangeListen
     }
 
     override fun readChange(book: Books) {
-        for (el in fragmentList){
+        for (el in fragmentList) {
             if (el is MyListsFragment) {
                 el.dataUpdate(0)
                 el.dataUpdate(1)
             }
         }
-
     }
 
-    private fun generateBooks(): ArrayList<Books> {
-        val booksList = arrayListOf<Books>()
-        val t = Thread {
-            val dbh = DBHelper(this)
-            try {
-                val dbBooksArray = dbh.readAllFromBooks()
-                if (dbBooksArray.size == 0) {
-                    val url = URL("https://pastebin.com/raw/cxSZwjdV")
-                    val urlConnection = url.openConnection() as HttpURLConnection
-                    val msg: StringBuilder = java.lang.StringBuilder()
-                    try {
-                        val input = BufferedReader(InputStreamReader(urlConnection.inputStream))
-                        input.forEachLine {
-                            msg.append(it)
-                        }
-                    } finally {
-                        urlConnection.disconnect()
-                        val jsonObject = JSONTokener(msg.toString()).nextValue() as JSONObject
-                        val booksArray = jsonObject.getJSONArray("books")
-                        for (i in 0 until booksArray.length()) {
-                            val name = booksArray.getJSONObject(i).getString("name")
-                            val author = booksArray.getJSONObject(i).getString("author")
-                            val image = booksArray.getJSONObject(i).getString("image")
-                            val series = booksArray.getJSONObject(i).getBoolean("series")
-                            val audiobook = booksArray.getJSONObject(i).getBoolean("audiobook")
-                            val ebook = booksArray.getJSONObject(i).getBoolean("ebook")
-                            val read = booksArray.getJSONObject(i).getBoolean("read")
-                            val book = Books(
-                                name,
-                                author,
-                                image,
-                                series,
-                                audiobook,
-                                ebook,
-                                dbh.insert(name, author, image, series, audiobook, ebook, read),
-                                read
-                            )
-                            booksList.add(book)
-                        }
-                    }
-                } else {
-                    for (i in 0 until dbBooksArray.size) {
-                        booksList.add(
-                            Books(
-                                dbBooksArray[i]["name"] as String,
-                                dbBooksArray[i]["author"] as String,
-                                dbBooksArray[i]["image"] as String,
-                                dbBooksArray[i]["series"] == 1,
-                                dbBooksArray[i]["audiobook"] == 1,
-                                dbBooksArray[i]["ebook"] == 1,
-                                dbBooksArray[i]["id"] as Long,
-                                dbBooksArray[i]["read"] == 1
-                            )
-                        )
-                    }
-                }
-            } finally {
-                dbh.close()
+    private fun onBooksLoaded(books: ArrayList<Books>) {
+        val tl = findViewById<TabLayout>(R.id.tab_layout)
+        val vp = findViewById<ViewPager2>(R.id.place_holder_vp2)
+        fragmentList =
+            arrayOf(MyBooksListFragment.newInstance(books), MyListsFragment.newInstance(books))
+        adapter = VPAdapter(this, fragmentList)
+        vp.adapter = adapter
+        TabLayoutMediator(tl, vp) { tab, pos ->
+            tab.text = tabTitles[pos]
+        }.attach()
+    }
+
+    private fun generateBooks() {
+        val books: ArrayList<Books> = ArrayList()
+        Thread {
+            for (book in BooksRepository(this@MainActivity).getBooks() as ArrayList<Books>) {
+                books.add(book)
             }
-        }
-        t.start()
-        t.join()
-        return booksList
+            handler.post { onBooksLoaded(books) }
+        }.start()
     }
 }
