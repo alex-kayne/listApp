@@ -2,6 +2,7 @@ package com.example.listapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,7 +12,7 @@ import com.example.listapp.ui.adapter.MyListAdapter
 
 class MyListsFragment : Fragment(R.layout.fragment_my_lists), MyListAdapter.OnCategoryListClicked {
     var recyclerViewAdapter: MyListAdapter? = null
-
+    private val LOG_TAG = "myLogs"
 
     private val categoryNames = arrayOf( // Засунуть в strings array
         "Непрочитанные",
@@ -24,12 +25,13 @@ class MyListsFragment : Fragment(R.layout.fragment_my_lists), MyListAdapter.OnCa
     )
 
     override fun onCategoryListClicked(categoryName: String) {
-        if (categoryName.equals("Авторы")) {
+        if (categoryName == "Авторы") {
             val intent = Intent(activity?.applicationContext, AuthorActivity::class.java)
             intent.putExtra("books", this.arguments?.getSerializable("books"))
             activity?.startActivity(intent)
         }
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,8 +45,9 @@ class MyListsFragment : Fragment(R.layout.fragment_my_lists), MyListAdapter.OnCa
         recyclerView.adapter = recyclerViewAdapter
     }
 
-    fun dataUpdate(pos: Int) {
-        recyclerViewAdapter?.notifyItemChanged(pos)
+    fun dataUpdate() {
+        recyclerViewAdapter?.notifyItemChanged(0)
+        recyclerViewAdapter?.notifyItemChanged(1)
     }
 
     companion object {

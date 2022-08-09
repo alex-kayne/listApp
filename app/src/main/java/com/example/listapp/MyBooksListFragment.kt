@@ -17,7 +17,8 @@ class MyBooksListFragment : Fragment(R.layout.fragment_my_books_list), BooksAdap
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        booksAdapter = BooksAdapter(this.arguments?.getSerializable("books") as ArrayList<Books>, this)
+        val books = arguments?.getSerializable("books") as ArrayList<Books>
+        booksAdapter = BooksAdapter(books, this)
         recyclerView.adapter = booksAdapter
     }
 
@@ -30,18 +31,14 @@ class MyBooksListFragment : Fragment(R.layout.fragment_my_books_list), BooksAdap
             }
     }
 
-    fun updateAll() {
-        booksAdapter.notifyDataSetChanged()
-    }
-
     override fun onBookClicked(book: Books) {
         book.read = !book.read
         book.let { BooksRepository(requireContext()).updateRead(it.dbIndex, it.read) }
-        (this.requireActivity() as OnReadChangeListener).readChange(book)
+        (this.requireActivity() as OnReadChangeListener).readChange()
     }
 
 
     interface OnReadChangeListener {
-        fun readChange(book: Books)
+        fun readChange()
     }
 }

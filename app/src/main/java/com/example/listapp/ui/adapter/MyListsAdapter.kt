@@ -8,13 +8,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listapp.model.entity.Books
 import com.example.listapp.R
+import java.io.Serializable
 
 class MyListAdapter(
     private val categoryArray: Array<String>,
     var books: ArrayList<Books>,
     var categoryClicked: OnCategoryListClicked
 ) :
-    RecyclerView.Adapter<MyListAdapter.ViewHolder>() {
+    RecyclerView.Adapter<MyListAdapter.ViewHolder>(),
+    Serializable{
     override fun getItemCount() = categoryArray.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
