@@ -8,12 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.listapp.model.entity.Books
+import com.example.listapp.presentation.BooksPresenterImpl
 import com.example.listapp.ui.adapter.MyListAdapter
 
 class MyListsFragment : Fragment(R.layout.fragment_my_lists), MyListAdapter.OnCategoryListClicked {
-    var recyclerViewAdapter: MyListAdapter? = null
     private val LOG_TAG = "myLogs"
-
     private val categoryNames = arrayOf( // Засунуть в strings array
         "Непрочитанные",
         "Прочитанные",
@@ -23,6 +22,7 @@ class MyListsFragment : Fragment(R.layout.fragment_my_lists), MyListAdapter.OnCa
         "Электронные книги",
         "Не в списке"
     )
+    private val recyclerViewAdapter = MyListAdapter(categoryNames, this)
 
     override fun onCategoryListClicked(categoryName: String) {
         if (categoryName == "Авторы") {
@@ -37,12 +37,11 @@ class MyListsFragment : Fragment(R.layout.fragment_my_lists), MyListAdapter.OnCa
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.rvMyLists)
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        recyclerViewAdapter = MyListAdapter(
-            categoryNames,
-            arguments?.getSerializable("books") as ArrayList<Books>,
-            this
-        )
         recyclerView.adapter = recyclerViewAdapter
+    }
+
+    fun showBooks(books: List<Books>) {
+        recyclerViewAdapter.setBooks(books)
     }
 
     fun dataUpdate() {
@@ -52,8 +51,6 @@ class MyListsFragment : Fragment(R.layout.fragment_my_lists), MyListAdapter.OnCa
 
     companion object {
 
-        fun newInstance(books: ArrayList<Books>) = MyListsFragment().apply {
-            arguments = Bundle().apply { putSerializable("books", books) }
-        }
+        fun newInstance() = MyListsFragment()
     }
 }

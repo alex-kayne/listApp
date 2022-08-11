@@ -11,7 +11,7 @@ class BooksRepository (context: Context) {
 
     fun getBooks(): List<Books> {
         val books = remote.getBooks()
-        Thread.sleep(1500)
+        Thread.sleep(2000)
         db.deleteAllFromBooks()
         val indexes = db.insertBooks(books)
         for (i in indexes.indices) {

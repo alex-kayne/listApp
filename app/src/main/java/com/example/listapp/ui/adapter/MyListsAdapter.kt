@@ -12,12 +12,17 @@ import java.io.Serializable
 
 class MyListAdapter(
     private val categoryArray: Array<String>,
-    var books: ArrayList<Books>,
-    var categoryClicked: OnCategoryListClicked
+    private var categoryClicked: OnCategoryListClicked
 ) :
     RecyclerView.Adapter<MyListAdapter.ViewHolder>(),
     Serializable{
+    private var books: List<Books> = emptyList()
     override fun getItemCount() = categoryArray.size
+
+    fun setBooks(books: List<Books>) {
+        this.books = books
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context)

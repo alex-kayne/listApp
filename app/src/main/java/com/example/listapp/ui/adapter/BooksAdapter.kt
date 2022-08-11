@@ -12,9 +12,9 @@ import com.example.listapp.R
 import com.example.listapp.ui.util.DoubleClickListener
 
 class BooksAdapter(
-    private val values: ArrayList<Books>,
     private val bookClicked: OnBookClicked
 ) : RecyclerView.Adapter<BooksAdapter.BookViewHolder>() {
+    private var values: List<Books> = emptyList()
 
     override fun getItemCount() = values.size
 
@@ -32,6 +32,11 @@ class BooksAdapter(
 
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
         holder.bind(values[position])
+    }
+
+    fun setBooks(books: List<Books>) {
+        values = books
+        notifyDataSetChanged()
     }
 
     class BookViewHolder(
