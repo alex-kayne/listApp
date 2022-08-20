@@ -9,7 +9,7 @@ import com.example.listapp.model.entity.Books
 import java.io.Serializable
 
 class VPAdapter(
-    val fragment: FragmentActivity
+    private val fragment: FragmentActivity
 ) : FragmentStateAdapter(fragment) {
     private val myBooksListFragment: MyBooksListFragment by lazy {
         fragment.supportFragmentManager.findFragmentByTag("f0") as? MyBooksListFragment

@@ -5,7 +5,6 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.listapp.model.BooksRepository
 import com.example.listapp.model.entity.Books
 import com.example.listapp.ui.adapter.BooksAdapter
 
@@ -30,11 +29,10 @@ class MyBooksListFragment : Fragment(R.layout.fragment_my_books_list), BooksAdap
 
     override fun onBookClicked(book: Books) {
         book.read = !book.read
-        book.let { BooksRepository(requireContext()).updateRead(it.dbIndex, it.read) }
-        (this.requireActivity() as OnReadChangeListener).readChange()
+        (this.requireActivity() as OnReadChangeListener).readChange(book)
     }
 
     interface OnReadChangeListener {
-        fun readChange()
+        fun readChange(books: Books)
     }
 }

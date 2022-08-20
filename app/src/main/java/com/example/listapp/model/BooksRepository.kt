@@ -1,13 +1,13 @@
 package com.example.listapp.model
 
-import android.content.Context
 import com.example.listapp.model.entity.Books
 import com.example.listapp.model.source.BooksDao
 import com.example.listapp.model.source.RemoteBooksSource
 
-class BooksRepository (context: Context) {
-    private val remote = RemoteBooksSource()
-    private val db = BooksDao(DBHelper(context))
+class BooksRepository(
+    private val db: BooksDao,
+    private val remote: RemoteBooksSource
+) {
 
     fun getBooks(): List<Books> {
         val books = remote.getBooks()

@@ -2,22 +2,21 @@ package com.example.listapp.presentation
 
 import android.os.Handler
 import android.os.Looper
-import androidx.appcompat.app.AppCompatActivity
 import com.example.listapp.model.BooksRepository
 import com.example.listapp.model.entity.Books
-import java.io.Serializable
 
-class BooksPresenterImpl : BooksPresenter, Serializable {
+class BooksPresenterImpl (private val booksRepository: BooksRepository) : BooksPresenter {
     private var books: ArrayList<Books> = ArrayList()
     private val handler = Handler(Looper.getMainLooper())
     private var view: BooksPresenter.BooksListView? = null
 
-    fun attachView(view: BooksPresenter.BooksListView) {
+
+    override fun attachView(view: BooksPresenter.BooksListView) {
         this.view = view
         onViewAttached()
     }
 
-    fun dropView() {
+    override fun dropView() {
         view = null
     }
 
@@ -32,10 +31,16 @@ class BooksPresenterImpl : BooksPresenter, Serializable {
     private fun generateBooks() {
         val view = this.view
         Thread {
-            for (book in BooksRepository(this.view as AppCompatActivity).getBooks() as ArrayList<Books>) {
+            for (book in booksRepository.getBooks() as ArrayList<Books>) {
                 books.add(book)
             }
             handler.post { view?.showBooks(books) }
         }.start()
     }
+
+    override fun updateRead(book: Books) {
+        booksRepository.updateRead(book.dbIndex, book.read)
+        view?.onReadChanged()
+    }
+
 }

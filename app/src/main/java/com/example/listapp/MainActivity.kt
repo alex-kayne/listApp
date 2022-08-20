@@ -1,12 +1,9 @@
 package com.example.listapp
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.example.listapp.di.AppComponent
 import com.example.listapp.model.entity.Books
 import com.example.listapp.presentation.BooksPresenter
 import com.example.listapp.presentation.BooksPresenterImpl
@@ -18,13 +15,13 @@ class MainActivity : AppCompatActivity(), MyBooksListFragment.OnReadChangeListen
     BooksPresenter.BooksListView {
     private val tabTitles = arrayOf("Мои книги", "Списки")
     private val adapter = VPAdapter(this)
-    private var presenter: BooksPresenterImpl? = null
+    private var presenter: BooksPresenter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         presenter = if (savedInstanceState == null) {
-            BooksPresenterImpl()
+            AppComponent(applicationContext).providePresenter() // активити не создает внутри себя объекты классов, с котороми не работает!
         } else {
             (savedInstanceState.getSerializable("presenter") as BooksPresenterImpl)
         }
@@ -37,7 +34,11 @@ class MainActivity : AppCompatActivity(), MyBooksListFragment.OnReadChangeListen
         }.attach()
     }
 
-    override fun readChange() {
+    override fun readChange(books: Books) {
+        presenter?.updateRead(books)
+    }
+
+    override fun onReadChanged() {
         (supportFragmentManager.findFragmentByTag("f1") as MyListsFragment?)?.dataUpdate()
     }
 
