@@ -7,7 +7,7 @@ import com.google.gson.Gson
 
 class RemoteBooksSource(private val service: RetrofitServices) {
 
-//    fun getBooks(): List<Books> = service.getBooksList().execute().body()?.books ?: emptyList()
+    //fun getBooks(): List<Books> = service.getBooksList().execute().body()?.books ?: emptyList()
 
     fun getBooks(): List<Books> = Gson().fromJson(booksJson, BooksDTO::class.java).books
 

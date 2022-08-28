@@ -5,7 +5,7 @@ import android.os.Looper
 import com.example.listapp.model.BooksRepository
 import com.example.listapp.model.entity.Books
 
-class BooksPresenterImpl (private val booksRepository: BooksRepository) : BooksPresenter {
+class BooksPresenterImpl    (private val booksRepository: BooksRepository) : BooksPresenter {
     private var books: ArrayList<Books> = ArrayList()
     private val handler = Handler(Looper.getMainLooper())
     private var view: BooksPresenter.BooksListView? = null
@@ -42,5 +42,4 @@ class BooksPresenterImpl (private val booksRepository: BooksRepository) : BooksP
         booksRepository.updateRead(book.dbIndex, book.read)
         view?.onReadChanged()
     }
-
 }
