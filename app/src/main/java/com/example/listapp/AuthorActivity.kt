@@ -2,8 +2,7 @@ package com.example.listapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
+import com.example.listapp.model.entity.Books
 
 class AuthorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -11,7 +10,6 @@ class AuthorActivity : AppCompatActivity() {
         setContentView(R.layout.activity_author)
 
         val books = intent.getSerializableExtra("books") as ArrayList<Books>
-
 
         var authorFrag = AuthorListFragment.newInstance(books)
         var fragTrans = supportFragmentManager.beginTransaction()
